@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+python-multipart
+sqlalchemy
+pymysql 
+jinja2 
+ultralytics
+insightface
+faiss-cpu 
+torch
+torchvision
+pydantic-settings
+opencv-python-headless
+numpy
+pillow
+passlib[bcrypt]
+onnxruntime
