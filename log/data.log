@@ -1,0 +1,3 @@
+FastApiLog|2025-11-06 17:43:49.021|begin data start 2025-11-06T17:43:49.021925
+FastApiLog|2025-11-06 17:47:18.476|http_request|ip=127.0.0.1,elapsed=0,method=POST,url=/api/auth/login,body=POST: content-type-empty,status_code=200,response={"message":"Login successful"}
+FastApiLog|2025-11-06 17:51:39.012|http_request|ip=127.0.0.1,elapsed=0,method=POST,url=/api/auth/login,body=POST: application/x-www-form-urlencoded,status_code=200,response={"message":"Login successful"}

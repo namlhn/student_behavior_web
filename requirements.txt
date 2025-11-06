@@ -5,13 +5,13 @@ sqlalchemy
 pymysql 
 jinja2 
 ultralytics
-insightface
+#insightface
 faiss-cpu 
 torch
 torchvision
-pydantic-settings
 opencv-python-headless
 numpy
+pydantic_settings
 pillow
 passlib[bcrypt]
 onnxruntime
