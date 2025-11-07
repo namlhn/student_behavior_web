@@ -2,7 +2,7 @@ import os
 import json
 import faiss
 import numpy as np
-from app.core.config import settings
+from core.config import settings
 
 class VectorDB:
     def __init__(self):

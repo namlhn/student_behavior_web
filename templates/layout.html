@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Behavior Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-0gxUXCCR8yv9FM2NFpRofVK8fka+FBaEWgQqf5GITXk4C3jQmbKdfPp7jlF4QK7b" crossorigin="anonymous"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="h-full bg-base-200 text-base-content">
+  <div class="min-h-screen flex">
+    <aside class="w-64 bg-base-100 border-r flex flex-col">
+      <div class="px-4 py-4 border-b">
+        <div class="text-lg font-bold">Student Behavior Analysis</div>
+      </div>
+      <nav class="flex-1 p-2">
+        <ul class="space-y-1 text-sm">
+          <li>
+            <a href="/ui/students" class="flex items-center gap-2 rounded px-3 py-2 btn btn-ghost justify-start font-medium">
+              <i data-lucide="users" class="w-4 h-4"></i>
+              Students
+            </a>
+          </li>
+          <li>
+            <a href="/ui/faces" class="flex items-center gap-2 rounded px-3 py-2 btn btn-ghost justify-start">
+              <i data-lucide="camera" class="w-4 h-4"></i>
+              Faces
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="p-3 text-xs text-base-content/50 border-t">v0.1</div>
+    </aside>
+
+    <main class="flex-1 p-6">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% block body_scripts %}{% endblock %}
+  <script>
+    // Initialize Lucide icons
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+</html>

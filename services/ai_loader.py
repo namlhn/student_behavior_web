@@ -1,7 +1,6 @@
 import os
 import torch
 from ultralytics import YOLO
-import insightface
 from torchvision import models
 from pathlib import Path
 
@@ -12,7 +11,7 @@ class AIEngine:
         print(f"Using device: {self.device}")
 
         # 1. Load YOLOv8 (Behavior)
-        base_dir = Path(__file__).resolve().parents[2]
+        base_dir = Path(__file__).resolve().parents[1]
         models_dir = base_dir / "models"
         yolo_path = str(models_dir / "yolov8_best.pt")
         self.behavior_model = None
@@ -25,9 +24,10 @@ class AIEngine:
         except Exception as e:
             print(f"[WARN] Failed to load YOLOv8: {e}. Behavior detection disabled.")
 
-        # 2. Load InsightFace (Identity)
+        # 2. Load InsightFace (Identity) - optional
         self.identity_model = None
         try:
+            import insightface  # lazy optional import
             provider = 'CUDAExecutionProvider' if self.device.type == 'cuda' else 'CPUExecutionProvider'
             self.identity_model = insightface.app.FaceAnalysis(providers=[provider])
             self.identity_model.prepare(ctx_id=0 if self.device.type == 'cuda' else -1, det_size=(640, 640))

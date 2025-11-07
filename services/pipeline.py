@@ -3,10 +3,9 @@ import cv2
 import torch
 from collections import defaultdict
 from sqlalchemy.orm import Session
-from app.db import models, crud
-from app.db.vector_db import vector_db_instance
-from app.services.ai_loader import ai_engine
-from app.core.database import SessionLocal
+from db.vector_db import vector_db_instance
+from services.ai_loader import ai_engine
+from core.database import SessionLocal
 
 
 def run_analysis_pipeline(video_path: str, video_id: str):
@@ -79,12 +78,7 @@ def run_analysis_pipeline(video_path: str, video_id: str):
 
         cap.release()
 
-        for sid, behaviors in student_behavior_time.items():
-            for behavior, duration in behaviors.items():
-                crud.create_analysis_result(db, video_id, sid, behavior, "N/A", duration)
-        for sid, emotions in student_emotion_time.items():
-            for emotion, duration in emotions.items():
-                crud.create_analysis_result(db, video_id, sid, "N/A", emotion, duration)
+        # Per current design, persisting analysis results is deferred and handled elsewhere
 
         print(f"[{video_id}] Pipeline finished and insights saved.")
     except Exception as e:

@@ -1,13 +1,15 @@
 from fastapi import FastAPI
 import os
 from pathlib import Path
-from core.fastapi_logger import log_data
 from core.database import engine, Base
 from core.config import settings
-from app import routers as app_router_api
+from api import routers as app_router_api
+from web.router import router_web
+from fastapi.staticfiles import StaticFiles
+from db import models as db_models  # noqa: F401
+
 # Create tables
 try:
-    # ensure models are imported before create_all
     Base.metadata.create_all(bind=engine)
     print("Database tables created successfully (if not exist).")
 except Exception as e:
@@ -16,15 +18,17 @@ except Exception as e:
 
 app = FastAPI(title="Student Behavior AI Web", docs_url="/docs", redoc_url="/redoc")
 
+# Routers
 app.include_router(app_router_api.router_api, prefix="/api")
+app.include_router(router_web)
 
-base_dir = Path(__file__).resolve().parents[1]
-#templates_dir = str(base_dir / "templates")
-#templates = Jinja2Templates(directory=templates_dir)
-
+# Static and uploads
+base_dir = Path(__file__).resolve().parent
+web_static = base_dir / "web" / "static"
+static_dir = web_static if web_static.exists() else (base_dir / "static")
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+if static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
-from datetime import datetime
-log_data.data('begin data start %s', datetime.now().isoformat())
-log_data.info('begin info start %s', datetime.now().isoformat())
 

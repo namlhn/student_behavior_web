@@ -1,4 +1,4 @@
-from fastapi import Request, Response, status, HTTPException, APIRouter, params, Depends
+from fastapi import Request, Response, status, HTTPException, APIRouter, params
 from fastapi.datastructures import Default
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
@@ -25,13 +25,6 @@ from core.config import settings
 from core.fastapi_logger import log_data
 
 
-class MethodCode(str, Enum):
-    GET = "GET"
-    POST = "POST"
-    PUT = "PUT"
-    DELETE = "DELETE"
-
-
 def get_request_ip(request):
     ip = str(request.client.host)
     # Note: HTTP_X_FORWARDED_FOR might be a list of addresses! NOTE: We only trust the LAST address because it's the
@@ -47,7 +40,6 @@ class LogRequestRoute(APIRoute):
         original_route_handler = super().get_route_handler()
 
         async def custom_route_handler(request: Request) -> Response:
-            from core.fastapi_logger import log_data
             start = time.time()
             ex = None
             try:
@@ -115,25 +107,12 @@ class LogRequestRoute(APIRoute):
         return custom_route_handler
 
 
-class ValidationErrorLoggingRoute(APIRoute):
-    def get_route_handler(self) -> Callable:
-        original_route_handler = super().get_route_handler()
-
-        async def custom_route_handler(request: Request) -> Response:
-            try:
-                return await original_route_handler(request)
-            except RequestValidationError as exc:
-                body = await request.body()
-                detail = {"errors": exc.errors(), "body": body.decode()}
-                raise HTTPException(status_code=422, detail=detail)
-
-        return custom_route_handler
-
-
-def api_response_data(result_code: str, reply: [None, Any] = None):
-    response = JSONResponse({"result": result_code, "reply": jsonable_encoder(reply)}, status_code=status.HTTP_200_OK)
+def api_response_data(result_code: str, reply: [None, Any] = None, message: str = None):
+    response_data = {"result": result_code, "reply": jsonable_encoder(reply)}
+    if message:
+        response_data["message"] = message
+    response = JSONResponse(response_data, status_code=status.HTTP_200_OK)
     response.headers["Content-Type"] = 'application/json; charset=utf-8'
-    # response = JSONResponse({"result": result_code, "reply": reply}, status_code=status.HTTP_200_OK)
     return response
 
 

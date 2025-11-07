@@ -1,3 +1,7 @@
-FastApiLog|2025-11-06 17:43:49.021|begin data start 2025-11-06T17:43:49.021925
-FastApiLog|2025-11-06 17:47:18.476|http_request|ip=127.0.0.1,elapsed=0,method=POST,url=/api/auth/login,body=POST: content-type-empty,status_code=200,response={"message":"Login successful"}
-FastApiLog|2025-11-06 17:51:39.012|http_request|ip=127.0.0.1,elapsed=0,method=POST,url=/api/auth/login,body=POST: application/x-www-form-urlencoded,status_code=200,response={"message":"Login successful"}
+FastApiLog|2025-11-08 03:58:21.007|http_request|ip=127.0.0.1,elapsed=91,method=GET,url=/api/students,body=GET: content-type-empty,status_code=500,response=exception:(sqlite3.OperationalError) no such column: students.student_code
+[SQL: SELECT students.id AS students_id, students.student_code AS students_student_code, students.name AS students_name, students.email AS students_email, students.phone AS students_phone, students.date_of_birth AS students_date_of_birth, students.gender AS students_gender, students.address AS students_address, students.class_name AS students_class_name, students.academic_level AS students_academic_level, students.course AS students_course, students.major AS students_major, students.gpa AS students_gpa, students.status AS students_status, students.photo_path AS students_photo_path, students.face_embedding_count AS students_face_embedding_count, students.created_at AS students_created_at, students.updated_at AS students_updated_at 
+FROM students ORDER BY students.created_at DESC
+ LIMIT ? OFFSET ?]
+[parameters: (20, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+FastApiLog|2025-11-08 03:58:43.238|http_request|ip=127.0.0.1,elapsed=0,method=POST,url=/api/auth/login,body=POST: content-type-empty,status_code=200,response={"message":"Login successful"}

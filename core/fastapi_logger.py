@@ -27,29 +27,6 @@ LOGGER_CONFIG = {
 
 log_data = None
 
-
-def _log_record_exception(func):
-    def _func(self):
-        try:
-            return func(self)
-        except:
-            log_data.exception('log_exception|thread=%s:%s,file=%s:%s,func=%s:%s,log=%s',
-                               self.process, self.thread, self.filename, self.lineno, self.module, self.funcName,
-                               self.msg)
-            raise
-
-    return _func
-
-
-def append_exc(func):
-    def _append_exc(*args, **kwargs):
-        if 'exc_info' not in kwargs:
-            kwargs['exc_info'] = True
-        return func(*args, **kwargs)
-
-    return _append_exc
-
-
 def init_logger(log_dir=None, is_debug=False, is_test=False, rollover_when='MIDNIGHT',
                 rollover_backup_count=30):
     # pylint: disable=too-many-locals
@@ -58,16 +35,15 @@ def init_logger(log_dir=None, is_debug=False, is_test=False, rollover_when='MIDN
         log_dir = './log_api'
 
     import os
-    import sys
 
     if log_dir != '@stdout':
         log_dir = os.path.abspath(log_dir)
         if log_dir and not os.path.exists(log_dir):
-            os.mkdir(log_dir)
+            os.makedirs(log_dir, exist_ok=True)
 
     logger_config = {
         'version': 1,
-        'disable_existing_loggers': True,
+        'disable_existing_loggers': False,
         'formatters': {
             'standard': {
                 'format': 'FastApiLog|%(asctime)s.%(msecs)03d|%(levelname)s|%(process)d:%(thread)d|%(filename)s:%(lineno)d|%(module)s.%(funcName)s|%(message)s',
@@ -90,6 +66,8 @@ def init_logger(log_dir=None, is_debug=False, is_test=False, rollover_when='MIDN
                 'when': rollover_when,
                 'backupCount': rollover_backup_count,
                 'formatter': 'standard',
+                'encoding': 'utf-8',
+                'delay': True,
             },
             'file_error': {
                 'level': 'WARNING',
@@ -98,6 +76,8 @@ def init_logger(log_dir=None, is_debug=False, is_test=False, rollover_when='MIDN
                 'when': rollover_when,
                 'backupCount': rollover_backup_count,
                 'formatter': 'standard',
+                'encoding': 'utf-8',
+                'delay': True,
             },
             'file_info': {
                 'level': 'DEBUG',
@@ -106,6 +86,8 @@ def init_logger(log_dir=None, is_debug=False, is_test=False, rollover_when='MIDN
                 'when': rollover_when,
                 'backupCount': rollover_backup_count,
                 'formatter': 'short',
+                'encoding': 'utf-8',
+                'delay': True,
             },
             'file_data': {
                 'level': 'DEBUG',
@@ -114,6 +96,8 @@ def init_logger(log_dir=None, is_debug=False, is_test=False, rollover_when='MIDN
                 'when': rollover_when,
                 'backupCount': rollover_backup_count,
                 'formatter': 'data',
+                'encoding': 'utf-8',
+                'delay': True,
             },
         },
         'loggers': {
@@ -127,25 +111,20 @@ def init_logger(log_dir=None, is_debug=False, is_test=False, rollover_when='MIDN
                 'level': 'DEBUG',
                 'propagate': True,
             },
-            'django.request': {
-                'handlers': ['file_fatal', 'file_error', 'file_info'],
-                'level': 'ERROR',
-                'propagate': True,
+            'uvicorn': {
+                'handlers': ['file_info'],
+                'level': 'INFO',
+                'propagate': False,
             },
-            'tornado.access': {
-                'handlers': ['file_data'],
-                'level': 'DEBUG',
-                'propagate': True,
+            'uvicorn.error': {
+                'handlers': ['file_error'],
+                'level': 'INFO',
+                'propagate': False,
             },
-            'tornado.application': {
-                'handlers': ['file_fatal', 'file_error', 'file_info'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            'tornado.general': {
-                'handlers': ['file_fatal', 'file_error', 'file_info'],
-                'level': 'DEBUG',
-                'propagate': True,
+            'uvicorn.access': {
+                'handlers': ['file_info'],
+                'level': 'INFO',
+                'propagate': False,
             },
         }
     }
@@ -158,6 +137,8 @@ def init_logger(log_dir=None, is_debug=False, is_test=False, rollover_when='MIDN
             'when': rollover_when,
             'backupCount': rollover_backup_count,
             'formatter': 'short',
+            'encoding': 'utf-8',
+            'delay': True,
         }
         logger_config['loggers']['django.db.backends'] = {
             'handlers': ['file_debug'],
@@ -182,29 +163,13 @@ def init_logger(log_dir=None, is_debug=False, is_test=False, rollover_when='MIDN
         for logger_item in loggers:
             loggers[logger_item]['handlers'] = ['console']
 
-    work_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
-    recover_path = False
-    if work_dir not in sys.path:
-        sys.path.append(work_dir)
-        recover_path = True
-
     import logging
-    try:
-        import logging.config
-        logging.config.dictConfig(logger_config)
-    except:
-        from core import loggerconfig
-        loggerconfig.dictConfig(logger_config)
-
-    if recover_path:
-        sys.path.remove(work_dir)
+    import logging.config
+    logging.config.dictConfig(logger_config)
 
     global log_data  # pylint: disable=global-statement
     log_data = logging.getLogger('main')
-    log_data.exception = append_exc(log_data.error)
-    log_data.assertion = log_data.critical
     log_data.data = logging.getLogger('data').info
-    logging.LogRecord.getMessage = _log_record_exception(logging.LogRecord.getMessage)
 
 
 if log_data is None:

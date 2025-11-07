@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 from sqlalchemy.orm import Session
-from app.db import crud
-from app.db.vector_db import vector_db_instance
-from app.services.ai_loader import ai_engine
+from db import crud
+from db.vector_db import vector_db_instance
+from services.ai_loader import ai_engine
 
 def enroll_new_student(db: Session, name: str, image_bytes: bytes):
     db_student = crud.get_student_by_name(db, name=name)
