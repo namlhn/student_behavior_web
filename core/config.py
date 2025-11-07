@@ -28,6 +28,13 @@ class Settings(BaseSettings):
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 10
 
+    # CORS and Request ID
+    CORS_ALLOW_ORIGINS: list[str] = ["*"]
+    CORS_ALLOW_CREDENTIALS: bool = True
+    CORS_ALLOW_METHODS: list[str] = ["*"]
+    CORS_ALLOW_HEADERS: list[str] = ["*"]
+    REQUEST_ID_HEADER: str = "X-Request-ID"
+
     class Config:
         env_file = ".env"
 

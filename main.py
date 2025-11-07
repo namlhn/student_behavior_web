@@ -6,6 +6,7 @@ from core.config import settings
 from api import routers as app_router_api
 from web.router import router_web
 from fastapi.staticfiles import StaticFiles
+from core.middleware import apply_middlewares
 from db import models as db_models  # noqa: F401
 
 # Create tables
@@ -17,6 +18,9 @@ except Exception as e:
     print("Please ensure MySQL server is running and database is created.")
 
 app = FastAPI(title="Student Behavior AI Web", docs_url="/docs", redoc_url="/redoc")
+
+# Middlewares (CORS, Request ID)
+apply_middlewares(app, settings)
 
 # Routers
 app.include_router(app_router_api.router_api, prefix="/api")

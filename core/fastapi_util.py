@@ -93,8 +93,9 @@ class LogRequestRoute(APIRoute):
                     status_code = 500
                     response_body = 'exception:%s' % str(ex_value)
 
-            log_data.data('http_request|ip=%s,elapsed=%d,method=%s,url=%s,body=%s,status_code=%d,response=%s',
-                          get_request_ip(request), elapsed, request.method, request.url.path,
+            request_id = getattr(request.state, 'request_id', '-')
+            log_data.data('http_request|request_id=%s,ip=%s,elapsed=%d,method=%s,url=%s,body=%s,status_code=%d,response=%s',
+                          request_id, get_request_ip(request), elapsed, request.method, request.url.path,
                           request_body, status_code, response_body)
 
             if ex is not None:
